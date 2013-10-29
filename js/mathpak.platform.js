@@ -16,6 +16,29 @@
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+mpArgsGet =function() {
+	var query = location.href.substring((location.href.indexOf('?')+1), location.href.length);
+	if(location.href.indexOf('?') < 0) 
+		query = '';
+
+	//Use ; as a separator (gitweb uses ;, and need to maintain compatibility)
+	querysplit = query.split(';');
+	query = new Array();
+
+	for(var i = 0; i < querysplit.length; i++){
+		var namevalue = querysplit[i].split('=');
+		namevalue[1] = namevalue[1].replace(/\+/g, ' ');
+		if(namevalue[0] == "mpapp") {
+			mpApp = namevalue[1];
+		}
+		if(namevalue[0] == "mpserver") {
+			mpServer = namevalue[1];
+		}
+	}
+
+}
+
+
 
 //Check if all needed data has been downloaded. Downloading of data is async (ajax)
 var mpDataLoaded = function(dh) {
@@ -95,30 +118,27 @@ var mpDataformat= new Array();
 var mpDataserver= new Array();
 var mpLoaded = new Array();
 
-//TBD: get from xml file/pass from html file
-var mpServer="cs.mathpak.com";
-var mpUrl = "";
+var mpApp="";
+var mpServer="cs.mathpak.com";  //Name of server where the app file resides, cs.mathpak.com or demo.mathpak.com for most apps
+mpUrl = "http://SERVER/?p=PROJECT.git;a=blob_plain;f=FILE";
 
-var mpInit=function(app, visual, local) {
-	mpApp = app;
+var mpInit=function(visual, local) {
+	mpArgsGet();
 	var regex = new RegExp('_', 'g');
-	var appfile = app.replace(regex, "/");
+	var appfile = mpApp.replace(regex, "/");
 
 	mpVisual = visual;
 	mpLocal = local;
+	var ploc;
 	if(mpLocal) {
 		mpUrl = "/PROJECT/FILE";
+		ploc = mpUrl.replace("PROJECT", appfile);
 	} else {
-		mpUrl = "http://SERVER/git/?p=PROJECT.git;a=blob_plain;f=FILE";
-	}
-	var ploc;
-	if(mpLocal == 0) {
-		sloc = mpUrl.replace("SERVER", mpServer);
+		mpAppUrl = "http://SERVER/git?p=PROJECT.git;a=blob_plain;f=FILE";
+		sloc = mpAppUrl.replace("SERVER", mpServer);
 		ploc = sloc.replace("PROJECT", appfile);
-	} else {
-		ploc = mpUrl.replace("/PROJECT", "");
 	}
-	var file = app+".xml";
+	var file = mpApp+".xml";
 	var appfile = ploc.replace("FILE", file);
 	$.ajax({
 		type: "GET",
@@ -135,7 +155,7 @@ var mpInit=function(app, visual, local) {
 					//Fix the name/type ordering 
 					var args  = dataname.split("_");
 					//var regex = new RegExp('_', 'g');
-					mpDataname[i] = args[0]+"/"+args[2]+"/"+args[1]+"/"+args[3];
+					mpDataname[i] = args[0]+"/"+args[1]+"/"+args[2]+"/"+args[3];
 
 					mpDataformat[i] = $(this).attr('format');
 					mpDataserver[i] = $(this).attr('server');

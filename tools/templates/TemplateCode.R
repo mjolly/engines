@@ -1,4 +1,3 @@
-#!/usr/bin/python
 #Copyright (C) 2013 Purushotham Kamath, Mathpak Inc
 #
 #This program is free software; you can redistribute it and/or
@@ -14,33 +13,27 @@
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#main
 
 
-import xml.etree.ElementTree as ET;
+MATHPAKFUNCTION <- function() {
+
+	mpInit();
+	mpOpen("input", "r");
+	inputdata <- mpRead("input");
+	mpClose("input");
 
 
+	#Add your code here
+	outputdata <-data.frame();
+	outputdata <-inputdata;
 
-class MathpakEngineWorkFlow:
-	def __init__(self, name):
-		self.name=name;
+	mpOpen("output", "w");
+	mpWrite("output", outputdata, "w");
+	mpClose("output");
+}
 
-	def engineDataNamesGet(self, file, component) :
-		data = {};
-		tree = ET.parse(file)
-		root = tree.getroot();
-		for c in root:
-			if(c.tag == component):
-				for s in c:
-					if 'data' in s.attrib.keys():
-						d = s.attrib['data'];
-						h = s.attrib['handle'];
-						args = d.split("_");
-						cl = args[0];
-						user = args[1];
-						type = args[2];
-						name = args[3];
-						#Fix the ordering of user/typein directory structure
-						ddir = cl+"/"+user+"/"+type+"/"+name;
-						dname = "/"+ddir+"/"+name+".data";
-						data[h] = dname;
-		return data;
+mpcomponent <- "MATHPAKCOMPONENT";
+library('mathpak');
+MATHPAKFUNCTION();
+

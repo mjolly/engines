@@ -24,26 +24,24 @@ import sys;
 
 class MathpakEngine:
 	def __init__(self, component) :
-		self.stagingdir = os.environ.get('MATHPAK_STAGING')
-		app=sys.argv[1];
-		print ("App: "+app);
-		print ("Component: "+component);
-
-		self.mode="local";
+		if len(sys.argv) > 2:
+			self.stagingdir = sys.argv[2];
+		else:
+			self.stagingdir = os.environ.get('MATHPAK_STAGING')
+		self.app=sys.argv[1];
 		self.component=component;
-		self.app=app;
 		self.func=self.component;
-		self.io = MathpakEngineIOFile.MathpakEngineIOFile(self.mode, self.component, self.app, self.stagingdir);
+		self.io = MathpakEngineIOFile.MathpakEngineIOFile(self.component, self.app, self.stagingdir);
 		self.io.engineDataNamesGet();
 
-	def open(self, handle, mode) :
+	def open(self, handle, mode):
 		return self.io.engineOpen(handle, mode);
-	
+
 	def close(self, handle) :
 		return self.io.engineClose(handle);
 
 	def read(self, handle, records=0) :
 		return self.io.engineRead(handle, records);
-	
+
 	def write(self, handle, data) :
 		return self.io.engineWrite(handle, data);

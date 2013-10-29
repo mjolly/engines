@@ -58,7 +58,8 @@ engineRead <- function(handle, records){
 	inputfile <- gsub(" ", "", inputfile);
 	args <- unlist(strsplit(inputfile, "_"));
 
-	inputfiledir=paste(args[1],args[2], args[3], args[4], sep="/");
+	#Fix ordering of type, user
+	inputfiledir=paste(args[1],args[3], args[2], args[4], sep="/");
 	inputfilename=args[4];
 	appdir <- gsub("_", "/", mpapp);
 	#file <- paste(stagingdir, "/", appdir, "/", inputfiledir, "/", inputfilename, ".data", sep ='');
@@ -80,7 +81,8 @@ engineWrite <- function(handle, data, mode) {
 	outputfile <- mpdata[handle];
 	outputfile <- gsub(" ", "", outputfile);
 	args <- unlist(strsplit(outputfile, "_"));
-	outputfiledir=paste(args[1],args[2], args[3], args[4], sep="/");
+	#Fix ordering of type, user
+	outputfiledir=paste(args[1],args[3], args[2], args[4], sep="/");
 	outputfilename=args[4];
 	appdir <- gsub("_", "/", mpapp);
 	#file <- paste(stagingdir, "/", appdir, "/", outputfiledir, "/", outputfilename, ".data", sep ='');

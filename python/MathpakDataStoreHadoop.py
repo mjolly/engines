@@ -15,40 +15,43 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-class MathpakDataStoreFile:
+import fileinput
+
+#Hadoop streaming: Read data from stdin, write data to stdout
+class MathpakDataStoreHadoop:
 	def __init__(self, stagingdir, app) :
 		self.stagingdir = stagingdir;
 		self.app = app;
 		self.files = {};
+		self.rdata = {};
+		self.wdata = {};
+		rindex = 0;
 
 	def dsWrite(self, filename, data) :
 		#TBD append
-		for line in data:
-			self.files[filename].write(line);
-		self.files[filename].flush();
+		for line in wdata:
+			wdata.append(line);
+
 
 	def dsRead(self, filename, data, records=0) :
-		#TBD check number of copies here, improve efficiency?
+		#Read from stdin
 		if(records ==0):
-			#Read entire file in one read
-			tdata = self.files[filename].readlines();
-			for line in tdata:
+			#Read entire input in one read
+			for line in rdata:
 				data.append(line);
 		else:
 			#Read n records,
 			for count in range(0, records):
-				line = self.files[filename].readline();
-				if(line  != ""):
+				line = rdata[rindex];
+				if line  != "":
+					rindex = rindex +1;
 					data.append(line);
 
 	def dsOpen(self, filename, mode):
-		if (filename not in self.files.keys()) :
-			#appdir=self.app.replace("_", "/");
-			fullname = self.stagingdir+"/"+filename;
-			if(mode =='r'):
-				self.files[filename] = file(fullname, 'r');
-			else:
-				self.files[filename] = file(fullname, 'w');
+		#Copy stdin to local data
+		for line in fileinput.input():
+			rdata.append(line);
 
 	def dsClose(self, filename):
-			self.files[filename].close();
+		for line in wdata:
+			print line;

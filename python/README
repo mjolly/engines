@@ -1,0 +1,9 @@
+README for python mathpak engine:
+
+TBD
+
+
+Third party libs:
+storm.py:
+	Source: https://github.com/nathanmarz/storm-starter/blob/master/multilang/resources/storm.py 
+	License: Apache License Version 2.0

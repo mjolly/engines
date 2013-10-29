@@ -25,7 +25,6 @@ class MathpakDataStoreFile:
 		#TBD append
 		for line in data:
 			self.files[filename].write(line);
-		self.files[filename].flush();
 
 	def dsRead(self, filename, data, records=0) :
 		#TBD check number of copies here, improve efficiency?
@@ -42,8 +41,8 @@ class MathpakDataStoreFile:
 					data.append(line);
 
 	def dsOpen(self, filename, mode):
-		if (filename not in self.files.keys()) :
-			#appdir=self.app.replace("_", "/");
+		if filename not in self.files.keys() :
+			#appdir=self.app.replace("_", "/")
 			fullname = self.stagingdir+"/"+filename;
 			if(mode =='r'):
 				self.files[filename] = file(fullname, 'r');

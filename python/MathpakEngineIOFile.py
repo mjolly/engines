@@ -16,45 +16,57 @@
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import MathpakDataStoreFile;
+import MathpakDataStoreHadoop;
+import MathpakDataStoreStorm;
 import MathpakEngineWorkFlow;
 
 class MathpakEngineIOFile :
 
-	def __init__(self, mode, component, app, stagingdir) :
+	def __init__(self, component, app, stagingdir) :
 		self.app=app;
 		self.stagingdir =stagingdir;
 		self.wf = MathpakEngineWorkFlow.MathpakEngineWorkFlow(app);
-		self.dsf = MathpakDataStoreFile.MathpakDataStoreFile(self.stagingdir, self.app);
+		self.dsf = {};
 		self.data = {};
 		self.component=component;
 		self.app=app;
-		self.mode=mode;
 
 	def engineDataNamesGet(self):
 		appdir=self.app.replace("_", "/");
 		self.file = self.stagingdir+"/"+appdir+"/"+self.app+".xml";
 		self.data = self.wf.engineDataNamesGet(self.file, self.component);
 		for handle in self.data.keys() :
-			print("Handle: "+handle+" Data:"+self.data[handle]);
+			
+			dtyp = self.data[handle].split("/")[3];  #data starts with /, hence field 3
+			ctyp = self.component.split("_")[1];
+			if dtyp == "file":
+				self.dsf[handle] = MathpakDataStoreFile.MathpakDataStoreFile(self.stagingdir, self.app);
+			elif dtyp == "hadoop":
+				self.dsf[handle] = MathpakDataStoreHadoop.MathpakDataStoreHadoop(self.stagingdir, self.app);
+			elif dtyp == "storm":
+				if ctyp == "conn":
+					self.dsf[handle] = MathpakDataStoreStorm.MathpakDataStoreStormSpout(self.stagingdir, self.app);
+				else:
+					self.dsf[handle] = MathpakDataStoreStorm.MathpakDataStoreStormBolt(self.stagingdir, self.app);
 
 	def engineRead(self, handle, records=0) :
 		f = self.data[handle];
 		f = f.strip();
 		tarray = [];
-		self.dsf.dsRead(f, tarray, records);
+		self.dsf[handle].dsRead(f, tarray, records);
 		return tarray;
 	
 	def engineWrite(self, handle, data) :
 		f = self.data[handle];
 		f = f.strip();
-		self.dsf.dsWrite(f, data);
+		self.dsf[handle].dsWrite(f, data);
 
 	def engineOpen(self, handle, mode):
 		f = self.data[handle];
 		f = f.strip();
-		self.dsf.dsOpen(f, mode);
+		self.dsf[handle].dsOpen(f, mode);
 	
 	def engineClose(self, handle):
 		f = self.data[handle];
 		f = f.strip();
-		self.dsf.dsClose(f);
+		self.dsf[handle].dsClose(f);

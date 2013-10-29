@@ -16,31 +16,26 @@
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-import xml.etree.ElementTree as ET;
+#main
+def MATHPAKFUNCTION():
+	mpcomponent="MATHPAKCOMPONENT";
+	mp = MathpakEngine.MathpakEngine(mpcomponent);
+	mp.open("input", "r");
+	inputdata = mp.read("input");
+	mp.close("input");
 
+	#Add your code here
+	outputdata=inputdata;
+	
+	mp.open("output", "w");
+	mp.write("output", outputdata);
+	mp.close("output");
 
-
-class MathpakEngineWorkFlow:
-	def __init__(self, name):
-		self.name=name;
-
-	def engineDataNamesGet(self, file, component) :
-		data = {};
-		tree = ET.parse(file)
-		root = tree.getroot();
-		for c in root:
-			if(c.tag == component):
-				for s in c:
-					if 'data' in s.attrib.keys():
-						d = s.attrib['data'];
-						h = s.attrib['handle'];
-						args = d.split("_");
-						cl = args[0];
-						user = args[1];
-						type = args[2];
-						name = args[3];
-						#Fix the ordering of user/typein directory structure
-						ddir = cl+"/"+user+"/"+type+"/"+name;
-						dname = "/"+ddir+"/"+name+".data";
-						data[h] = dname;
-		return data;
+import os;
+import sys;
+stagingdir = os.environ.get('MATHPAK_STAGING')
+mpapp=sys.argv[1];
+mpappdir=mpapp.replace("_", "/");
+sys.path.append(stagingdir+'/engines/python/')
+import MathpakEngine;
+MATHPAKFUNCTION();
